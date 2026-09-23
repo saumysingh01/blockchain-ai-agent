@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Agent</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" />
+  <style>
+    /* : Sekiratte color scheme : */
+    :root {
+      --background:              #231e1c;
+      --surface-dim:             #1a1614;
+      --surface:                 #231e1c;
+      --surface-bright:          #2a231e;
+      --surface-container-low:   #1a1614;
+      --surface-container:       #2a231e;
+      --surface-container-high:  #352c26;
+      --on-surface:              #e3d8c9;
+      --on-surface-variant:      #c5b7a3;
+      --outline:                 #7a6e64;
+      --outline-variant:         #3a3530;
+      --primary:                 #d4875d;
+      --on-primary:              #231e1c;
+      --primary-container:       #402f28;
+      --on-primary-container:    #e7c8a9;
+      --secondary:               #e7c8a9;
+      --secondary-container:     #352c26;
+      --on-secondary-container:  #e3d8c9;
+      --tertiary:                #8a6a9a;
+      --error:                   #9a2a2a;
+      --error-container:         #6d1e1e;
+      --on-error-container:      #e7c8a9;
+      --success:                 #5c7c46;
+      --success-container:       #352c26;
+      --on-success-container:    #c5b7a3;
+      --yellow:                  #d4af37;
+      --subtext1:                #c5b7a3;
+      --subtext0:                #a09585;
+      --overlay2:                #7a6e64;
+      --overlay1:                #5a5149;
+      --overlay0:                #3a3530;
+      --crust:                   #0f0d0c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Rubik', system-ui, sans-serif;
+      background: var(--background);
+      color: var(--on-surface);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .material-symbols-rounded {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      font-size: 18px;
+      vertical-align: middle;
+      line-height: 1;
+      user-select: none;
+    }
+    .icon-sm { font-size: 16px; }
+    .icon-lg { font-size: 22px; }
+
+    /* : Header : */
+    header {
+      background: var(--surface-dim);
+      border-bottom: 1px solid var(--outline-variant);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-icon {
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+    }
+    .header-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--on-surface);
+      letter-spacing: 0.01em;
+    }
+    .header-sub {
+      font-size: 0.7rem;
+      color: var(--subtext0);
+      margin-left: 0.4rem;
+    }
+    .chain-pill {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.7rem;
+      color: var(--subtext1);
+    }
+    .chain-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+      animation: pulse 2.5s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* : Layout : */
+    .page { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+
+    /* : Stats row : */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .stat-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-body {}
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--subtext0);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-top: 1px;
+    }
+
+    /* : Chain visualiser : */
+    .chain-card {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      overflow: hidden;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--subtext0);
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .chain-scroll-wrap { overflow-x: auto; padding-bottom: 4px; }
+    .chain-scroll {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      min-width: min-content;
+    }
+    .chain-block {
+      background: var(--surface-dim);
+      border: 1px solid var(--outline-variant);
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      min-width: 160px;
+      max-width: 175px;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      transition: border-color 0.2s, transform 0.15s;
+      cursor: default;
+    }
+    .chain-block:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .chain-block.new-block { animation: blockIn 0.4s ease-out; }
+    @keyframes blockIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .block-num {
+      font-size: 0.62rem;
+      color: var(--overlay2);
+      margin-bottom: 0.35rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .block-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.3rem;
+    }
+    .block-employee { color: var(--on-surface-variant); margin-bottom: 0.1rem; }
+    .block-amount { color: var(--primary); font-weight: 500; }
+    .block-hash {
+      font-family: 'Courier New', monospace;
+      font-size: 0.6rem;
+      color: var(--overlay2);
+      margin-top: 0.45rem;
+      word-break: break-all;
+    }
+    .chain-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 0.35rem;
+      color: var(--overlay1);
+      flex-shrink: 0;
+      font-size: 0.7rem;
+    }
+
+    /* : Main grid : */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* : Cards : */
+    .card {
+      background: var(--surface-container);
+      border: 1px solid var(--outline-variant);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    /* : Form : */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--subtext0);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    input, select, textarea {
+      background: var(--surface-dim);
+      border: 1px solid var(--outline-variant);
+      border-radius: 6px;
+      color: var(--on-surface);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.825rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+    input::placeholder, textarea::placeholder { color: var(--overlay2); }
+    select option { background: var(--surface-container); }
+    textarea { resize: vertical; min-height: 72px; }
+
+    .form-actions {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      font-family: inherit;
+      padding: 0.55rem 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: opacity 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .btn-primary:hover:not(:disabled) { opacity: 0.88; }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--outline-variant);
+      color: var(--subtext1);
+    }
+    .btn-ghost:hover { border-color: var(--outline); color: var(--on-surface); }
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--outline-variant);
+      color: var(--subtext1);
+      padding: 0.45rem 0.6rem;
+    }
+    .btn-icon:hover { border-color: var(--outline); color: var(--on-surface); }
+
+    /* : Decision panel : */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 3rem 1rem;
+      color: var(--overlay2);
+      text-align: center;
+      font-size: 0.8rem;
+    }
+    .empty-state .material-symbols-rounded { font-size: 32px; opacity: 0.4; }
+
+    .decision-header { margin-bottom: 1rem; }
+    .decision-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+    .chip-approved {
+      background: color-mix(in srgb, var(--success) 15%, transparent);
+      color: var(--success);
+      border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
+    }
+    .chip-rejected {
+      background: color-mix(in srgb, var(--error) 15%, transparent);
+      color: #c96d6d;
+      border: 1px solid color-mix(in srgb, var(--error) 40%, transparent);
+    }
+    .chip-escalate {
+      background: color-mix(in srgb, var(--yellow) 15%, transparent);
+      color: var(--yellow);
+      border: 1px solid color-mix(in srgb, var(--yellow) 40%, transparent);
+    }
+
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .confidence-label { font-size: 0.68rem; color: var(--subtext0); min-width: 72px; }
+    .confidence-track {
+      flex: 1;
+      height: 4px;
+      background: var(--outline-variant);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .confidence-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    .confidence-pct { font-size: 0.75rem; font-weight: 500; min-width: 36px; text-align: right; }
+
+    .reasoning-section { margin-bottom: 1rem; }
+    .field-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--subtext0);
+      margin-bottom: 0.4rem;
+    }
+    .reasoning-text {
+      background: var(--surface-dim);
+      border: 1px solid var(--outline-variant);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: var(--on-surface-variant);
+    }
+
+    .flags-section { margin-bottom: 1rem; }
+    .flag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      background: color-mix(in srgb, var(--yellow) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--yellow) 25%, transparent);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.775rem;
+      color: var(--yellow);
+      margin-bottom: 0.4rem;
+    }
+    .flag-item .material-symbols-rounded { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.35rem 1rem;
+      background: var(--surface-dim);
+      border: 1px solid var(--outline-variant);
+      border-radius: 6px;
+      padding: 0.75rem;
+      font-size: 0.72rem;
+    }
+    .proof-key { color: var(--subtext0); white-space: nowrap; }
+    .proof-val {
+      color: var(--primary);
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      word-break: break-all;
+      text-align: right;
+    }
+
+    /* : Decisions table : */
+    .decisions-card { background: var(--surface-container); border: 1px solid var(--outline-variant); border-radius: 10px; overflow: hidden; }
+    .decisions-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--outline-variant);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .decisions-body { max-height: 320px; overflow-y: auto; }
+    .decisions-body::-webkit-scrollbar { width: 4px; }
+    .decisions-body::-webkit-scrollbar-track { background: transparent; }
+    .decisions-body::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 999px; }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto auto;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 1.25rem;
+      border-bottom: 1px solid var(--outline-variant);
+      transition: background 0.1s;
+    }
+    .decision-row:last-child { border-bottom: none; }
+    .decision-row:hover { background: var(--surface-dim); }
+
+    .row-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      width: 80px;
+    }
+    .row-name { font-size: 0.8rem; font-weight: 500; color: var(--on-surface); }
+    .row-meta { font-size: 0.68rem; color: var(--subtext0); margin-top: 1px; }
+    .row-amount { font-size: 0.8rem; font-weight: 500; color: var(--primary); text-align: right; }
+    .row-block { font-size: 0.65rem; color: var(--overlay2); font-family: monospace; text-align: right; }
+
+    /* : Spinner : */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid var(--outline-variant);
+      border-top-color: var(--on-primary);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* : Toast : */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--surface-container-high);
+      border: 1px solid var(--outline-variant);
+      border-radius: 8px;
+      padding: 0.65rem 1rem;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      z-index: 100;
+      max-width: 320px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* : Colors : */
+    .text-primary  { color: var(--primary); }
+    .text-success  { color: var(--success); }
+    .text-error    { color: #c96d6d; }
+    .text-warning  { color: var(--yellow); }
+    .text-muted    { color: var(--subtext0); }
+    .bg-success    { background: color-mix(in srgb, var(--success) 15%, transparent); }
+    .bg-error      { background: color-mix(in srgb, var(--error) 15%, transparent); }
+    .bg-warning    { background: color-mix(in srgb, var(--yellow) 15%, transparent); }
+
+    @media (max-width: 960px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-icon">
+    <span class="material-symbols-rounded icon-lg">hub</span>
+  </div>
+  <span class="header-title">Expense Agent</span>
+  <span class="header-sub">Agentic AI x Blockchain &mdash; Binary Hacks 4.0</span>
+  <div class="chain-pill" id="chain-pill">
+    <div class="dot"></div>
+    <span id="chain-status-text">Connecting...</span>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-icon-wrap" style="background:color-mix(in srgb,var(--primary) 12%,transparent)">
+        <span class="material-symbols-rounded text-primary">receipt_long</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num text-primary" id="stat-total">0</div>
+        <div class="stat-label">Total Decisions</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon-wrap" style="background:color-mix(in srgb,var(--success) 12%,transparent)">
+        <span class="material-symbols-rounded text-success">check_circle</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num text-success" id="stat-approved">0</div>
+        <div class="stat-label">Approved</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon-wrap" style="background:color-mix(in srgb,var(--error) 12%,transparent)">
+        <span class="material-symbols-rounded text-error">cancel</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num text-error" id="stat-rejected">0</div>
+        <div class="stat-label">Rejected</div>
+      </div>
+    </div>
+    <div class="stat">
+      <div class="stat-icon-wrap" style="background:color-mix(in srgb,var(--yellow) 12%,transparent)">
+        <span class="material-symbols-rounded text-warning">escalator_warning</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-num text-warning" id="stat-escalated">0</div>
+        <div class="stat-label">Escalated</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blockchain visualiser -->
+  <div class="chain-card">
+    <div class="section-label">
+      <span class="material-symbols-rounded icon-sm">link</span>
+      Live Blockchain
+    </div>
+    <div class="chain-scroll-wrap">
+      <div class="chain-scroll" id="chain-viz">
+        <div class="empty-state" style="padding:1rem 2rem;">
+          <span class="text-muted" style="font-size:0.75rem">Loading chain...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form + Result -->
+  <div class="main-grid">
+
+    <!-- Form -->
+    <div class="card">
+      <div class="section-label" style="margin-bottom:1rem;">
+        <span class="material-symbols-rounded icon-sm">add_card</span>
+        New Expense Request
+      </div>
+      <form id="expense-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="employee">Employee</label>
+            <input type="text" id="employee" placeholder="Full name" required />
+          </div>
+          <div class="form-group">
+            <label for="amount">Amount (Rs.)</label>
+            <input type="number" id="amount" placeholder="0.00" min="1" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" required>
+              <option value="">Select...</option>
+              <option value="Travel">Travel</option>
+              <option value="Equipment">Equipment</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Software">Software / Subscriptions</option>
+              <option value="Training">Training / Conferences</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Meals">Meals</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select id="department" required>
+              <option value="">Select...</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="HR">HR</option>
+              <option value="Finance">Finance</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" id="date" required />
+          </div>
+          <div class="form-group full">
+            <label for="description">Description</label>
+            <textarea id="description" placeholder="Business purpose and justification..." required></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" id="submit-btn">
+            <span class="material-symbols-rounded icon-sm">smart_toy</span>
+            Evaluate
+          </button>
+          <button type="button" class="btn-ghost" id="prefill-btn">
+            <span class="material-symbols-rounded icon-sm">bolt</span>
+            Demo fill
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Result -->
+    <div class="card" id="result-card">
+      <div class="section-label" style="margin-bottom:1rem;">
+        <span class="material-symbols-rounded icon-sm">smart_toy</span>
+        Agent Decision
+      </div>
+
+      <div class="empty-state" id="result-empty">
+        <span class="material-symbols-rounded">inbox</span>
+        <span>Submit a request to see<br>the agent's decision</span>
+      </div>
+
+      <div id="result-panel" style="display:none;">
+        <div class="decision-header">
+          <div id="decision-chip-wrap"></div>
+        </div>
+
+        <div class="confidence-row">
+          <span class="confidence-label text-muted">Confidence</span>
+          <div class="confidence-track">
+            <div class="confidence-fill" id="confidence-fill"></div>
+          </div>
+          <span class="confidence-pct" id="confidence-pct">0%</span>
+        </div>
+
+        <div class="reasoning-section">
+          <div class="field-label">Reasoning</div>
+          <div class="reasoning-text" id="reasoning-text"></div>
+        </div>
+
+        <div class="flags-section" id="flags-section"></div>
+
+        <div class="field-label">Blockchain Proof</div>
+        <div class="proof-grid">
+          <span class="proof-key">Block</span>
+          <span class="proof-val" id="proof-block"></span>
+          <span class="proof-key">Hash</span>
+          <span class="proof-val" id="proof-hash"></span>
+          <span class="proof-key">Context</span>
+          <span class="proof-val" id="proof-ctx"></span>
+          <span class="proof-key">Model</span>
+          <span class="proof-val" id="proof-model"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decisions table -->
+  <div class="decisions-card">
+    <div class="decisions-header">
+      <div class="section-label" style="margin:0;">
+        <span class="material-symbols-rounded icon-sm">table_rows</span>
+        Recent Decisions
+      </div>
+      <button class="btn-icon" onclick="loadChain()" title="Refresh">
+        <span class="material-symbols-rounded icon-sm">refresh</span>
+      </button>
+    </div>
+    <div class="decisions-body" id="decisions-body">
+      <div class="empty-state">
+        <span class="material-symbols-rounded">history</span>
+        <span>No decisions yet</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast">
+  <span class="material-symbols-rounded icon-sm" id="toast-icon">info</span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+  // : Helpers
+  const API = '';
+
+  function decisionColor(d) {
+    return d === 'APPROVED' ? 'var(--success)' : d === 'REJECTED' ? '#c96d6d' : 'var(--yellow)';
+  }
+  function decisionChipClass(d) {
+    return d === 'APPROVED' ? 'chip-approved' : d === 'REJECTED' ? 'chip-rejected' : 'chip-escalate';
+  }
+  function decisionIcon(d) {
+    return d === 'APPROVED' ? 'check_circle' : d === 'REJECTED' ? 'cancel' : 'escalator_warning';
+  }
+
+  function showToast(msg, type = 'info') {
+    const icons = { info: 'info', success: 'check_circle', error: 'error', warning: 'warning' };
+    const colors = { info: 'var(--subtext1)', success: 'var(--success)', error: '#c96d6d', warning: 'var(--yellow)' };
+    document.getElementById('toast-msg').textContent = msg;
+    document.getElementById('toast-icon').textContent = icons[type] || 'info';
+    document.getElementById('toast-icon').style.color = colors[type] || 'var(--subtext1)';
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // : Set today's date
+  document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+  // : Demo prefill
+  const demos = [
+    { employee: 'Raux Carter',  amount: 4500,  category: 'Travel',          department: 'Engineering', description: 'Flight tickets for client meeting in Mumbai' },
+    { employee: 'Alexa Carlisle',   amount: 28000, category: 'Equipment',        department: 'Engineering', description: 'New laptop for development work' },
+    { employee: 'Mark Hamilton',   amount: 1200,  category: 'Meals',            department: 'Sales',       description: 'Team lunch after quarterly review' },
+    { employee: 'Cheng Yi',   amount: 5500,  category: 'Entertainment',    department: 'Marketing',   description: 'Client dinner at The Leela' },
+    { employee: 'Ryan Beaufort',   amount: 750,   category: 'Office Supplies',  department: 'HR',          description: 'Stationery and printer paper' },
+  ];
+  let demoIdx = 0;
+  document.getElementById('prefill-btn').addEventListener('click', () => {
+    const d = demos[demoIdx++ % demos.length];
+    document.getElementById('employee').value    = d.employee;
+    document.getElementById('amount').value      = d.amount;
+    document.getElementById('category').value    = d.category;
+    document.getElementById('department').value  = d.department;
+    document.getElementById('description').value = d.description;
+    document.getElementById('date').value        = new Date().toISOString().split('T')[0];
+  });
+
+  // : Chain loading
+  async function loadChain() {
+    try {
+      const [chainRes, decisionsRes] = await Promise.all([
+        fetch(`${API}/api/chain`),
+        fetch(`${API}/api/decisions?n=20`),
+      ]);
+      const chain     = await chainRes.json();
+      const decisions = await decisionsRes.json();
+
+      updateChainStatus(chain);
+      renderChainViz(chain.blocks);
+      renderDecisions(decisions.decisions);
+      renderStats(decisions.decisions);
+    } catch {
+      document.getElementById('chain-status-text').textContent = 'Unreachable';
+    }
+  }
+
+  function updateChainStatus(data) {
+    const pill = document.getElementById('chain-pill');
+    const dot  = pill.querySelector('.dot');
+    const text = document.getElementById('chain-status-text');
+    text.textContent = `Block #${data.length - 1} \u00B7 ${data.valid ? 'Valid' : 'TAMPERED'}`;
+    if (data.valid) {
+      dot.style.background  = 'var(--success)';
+      pill.style.borderColor = 'var(--outline-variant)';
+      text.style.color       = 'var(--subtext1)';
+    } else {
+      dot.style.background  = '#c96d6d';
+      pill.style.borderColor = '#c96d6d';
+      text.style.color       = '#c96d6d';
+    }
+  }
+
+  function renderChainViz(blocks) {
+    const wrap = document.getElementById('chain-viz');
+    if (!blocks || blocks.length === 0) {
+      wrap.innerHTML = '<span class="text-muted" style="font-size:0.75rem;padding:1rem;">No blocks</span>';
+      return;
+    }
+    const recent = blocks.slice(-8);
+    wrap.innerHTML = recent.map((b, i) => {
+      const isGenesis  = b.data.type === 'genesis';
+      const decision   = b.data.decision || '';
+      const tampered   = b.tampered === true;
+      const color      = tampered ? '#c96d6d' : decision ? decisionColor(decision) : 'var(--overlay2)';
+      const borderCol  = tampered ? '#c96d6d' : 'var(--outline-variant)';
+      const isNew      = i === recent.length - 1 && blocks.length > 1;
+      const arrow      = i < recent.length - 1
+        ? `<div class="chain-arrow" style="${tampered || (recent[i+1]?.tampered) ? 'color:#c96d6d' : ''}">
+             <span class="material-symbols-rounded" style="font-size:14px;">arrow_forward</span>
+           </div>`
+        : '';
+
+      const tamperBadge = tampered
+        ? `<div style="display:flex;align-items:center;gap:3px;margin-top:0.35rem;font-size:0.62rem;color:#c96d6d;">
+             <span class="material-symbols-rounded" style="font-size:12px;">gpp_bad</span>
+             ${!b.hash_ok ? 'Data modified' : 'Link broken'}
+           </div>`
+        : '';
+
+      const block = `
+        <div class="chain-block ${isNew ? 'new-block' : ''}" style="border-color:${borderCol};${tampered ? 'background:color-mix(in srgb,#c96d6d 6%,var(--surface-dim))' : ''}">
+          <div class="block-num">BLOCK #${b.index}</div>
+          ${isGenesis
+            ? `<div class="block-badge text-muted">GENESIS</div>`
+            : `<div class="block-badge" style="color:${color}">${tampered ? 'TAMPERED' : decision}</div>
+               <div class="block-employee">${b.data.request?.employee || ''}</div>
+               <div class="block-amount" style="color:${tampered ? '#c96d6d' : 'var(--primary)'}">Rs.${(b.data.request?.amount || 0).toLocaleString()}</div>`
+          }
+          <div class="block-hash" style="color:${tampered ? '#c96d6d' : 'var(--overlay2)'}">${b.hash.slice(0, 8)}...${b.hash.slice(-6)}</div>
+          ${tamperBadge}
+        </div>${arrow}`;
+      return block;
+    }).join('');
+
+    const scrollWrap = document.querySelector('.chain-scroll-wrap');
+    scrollWrap.scrollLeft = scrollWrap.scrollWidth;
+  }
+
+  function renderStats(decisions) {
+    document.getElementById('stat-total').textContent     = decisions.length;
+    document.getElementById('stat-approved').textContent  = decisions.filter(d => d.data?.decision === 'APPROVED').length;
+    document.getElementById('stat-rejected').textContent  = decisions.filter(d => d.data?.decision === 'REJECTED').length;
+    document.getElementById('stat-escalated').textContent = decisions.filter(d => d.data?.decision === 'ESCALATE').length;
+  }
+
+  function renderDecisions(decisions) {
+    const body = document.getElementById('decisions-body');
+    if (!decisions || decisions.length === 0) {
+      body.innerHTML = `<div class="empty-state"><span class="material-symbols-rounded">history</span><span>No decisions yet</span></div>`;
+      return;
+    }
+    body.innerHTML = [...decisions].reverse().map(d => {
+      const req      = d.data?.request || {};
+      const decision = d.data?.decision || '?';
+      const color    = decisionColor(decision);
+      return `
+        <div class="decision-row">
+          <span class="row-chip" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color};border:1px solid color-mix(in srgb,${color} 35%,transparent)">
+            ${decision}
+          </span>
+          <div>
+            <div class="row-name">${req.employee || '\u2014'}</div>
+            <div class="row-meta">${req.category || ''} \u00B7 ${req.department || ''} \u00B7 ${d.timestamp?.slice(0,10) || ''}</div>
+          </div>
+          <div class="row-amount">Rs.${(req.amount || 0).toLocaleString()}</div>
+          <div class="row-block">#${d.index}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // : Form submit
+  document.getElementById('expense-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = `<div class="spinner"></div> Reasoning...`;
+
+    const payload = {
+      employee:    document.getElementById('employee').value.trim(),
+      amount:      parseFloat(document.getElementById('amount').value),
+      category:    document.getElementById('category').value,
+      description: document.getElementById('description').value.trim(),
+      department:  document.getElementById('department').value,
+      date:        document.getElementById('date').value,
+    };
+
+    try {
+      const res = await fetch(`${API}/api/expense`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'API error');
+      }
+      const data = await res.json();
+      renderResult(data);
+      await loadChain();
+      const type = data.decision === 'APPROVED' ? 'success' : data.decision === 'REJECTED' ? 'error' : 'warning';
+      showToast(`Block #${data.block_index} recorded on chain`, type);
+    } catch (err) {
+      showToast(err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `<span class="material-symbols-rounded icon-sm">smart_toy</span> Evaluate`;
+    }
+  });
+
+  function renderResult(data) {
+    document.getElementById('result-empty').style.display = 'none';
+    document.getElementById('result-panel').style.display = 'block';
+
+    // Chip
+    document.getElementById('decision-chip-wrap').innerHTML =
+      `<div class="decision-chip ${decisionChipClass(data.decision)}">
+         <span class="material-symbols-rounded icon-sm">${decisionIcon(data.decision)}</span>
+         ${data.decision}
+       </div>`;
+
+    // Confidence
+    const pct = Math.round(data.confidence * 100);
+    document.getElementById('confidence-pct').textContent = `${pct}%`;
+    document.getElementById('confidence-pct').style.color = decisionColor(data.decision);
+    const fill = document.getElementById('confidence-fill');
+    fill.style.width = `${pct}%`;
+    fill.style.background = decisionColor(data.decision);
+
+    // Reasoning
+    document.getElementById('reasoning-text').textContent = data.reasoning;
+
+    // Flags
+    const flagsSection = document.getElementById('flags-section');
+    if (data.flags && data.flags.length > 0) {
+      flagsSection.innerHTML =
+        `<div class="field-label" style="margin-bottom:0.4rem;">Policy Flags</div>` +
+        data.flags.map(f =>
+          `<div class="flag-item"><span class="material-symbols-rounded">warning</span>${f}</div>`
+        ).join('') +
+        `<div style="margin-bottom:1rem;"></div>`;
+    } else {
+      flagsSection.innerHTML = '';
+    }
+
+    // Proof
+    document.getElementById('proof-block').textContent = `#${data.block_index}`;
+    document.getElementById('proof-hash').textContent  = data.block_hash;
+    document.getElementById('proof-ctx').textContent   = `${data.chain_context_used} block(s) read`;
+    document.getElementById('proof-model').textContent = data.model;
+  }
+
+  // : Boot
+  loadChain();
+  setInterval(loadChain, 15000);
+</script>
+</body>
+</html>
