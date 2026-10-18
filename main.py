@@ -1,6 +1,5 @@
 """
 Main entry point - Agentic AI x Blockchain Expense Approval
-Binary Hacks 4.0 - PS-10
 
 Usage:
   python main.py
@@ -29,8 +28,7 @@ def check_env():
 
 if __name__ == "__main__":
     check_env()
-    print("Agentic AI x Blockchain - Expense Approval System")
-    print("Binary Hacks 4.0 - PS-10 - Open Innovation\n")
+    print("Agentic AI x Blockchain - Expense Approval System\n")
     print("Starting server at http://localhost:8004")
     print("API docs at     http://localhost:8004/docs\n")
 

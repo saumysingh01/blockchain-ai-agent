@@ -1,7 +1,5 @@
 # Agentic AI × Blockchain — Expense Approval System
 
-> **Binary Hacks 4.0 · PS-10 · Open Innovation**
-
 An autonomous expense approval system where an AI agent makes decisions — and every decision is permanently anchored to a blockchain. The blockchain is not just storage; it is the agent's memory.
 
 ---
@@ -231,11 +229,3 @@ Each block contains:
 ```
 
 The `hash` is a SHA-256 digest of `index + timestamp + data + previous_hash`. Any modification to any field breaks the hash chain and is flagged instantly by the `/api/chain/validate` endpoint and highlighted in the frontend.
-
----
-
-## Built For
-
-**Binary Hacks 4.0** — Problem Statement 10 (Open Innovation)
-
-The core thesis: blockchain immutability + AI reasoning creates an audit trail that is both intelligent and tamper-proof. Decisions aren't just logged — they're proven.
