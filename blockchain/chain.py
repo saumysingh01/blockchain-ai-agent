@@ -62,16 +62,29 @@ class Blockchain:
     def _load_or_create(self) -> None:
         os.makedirs(os.path.dirname(CHAIN_FILE), exist_ok=True)
         if os.path.exists(CHAIN_FILE):
-            with open(CHAIN_FILE, "r", encoding="utf-8") as f:
-                raw = json.load(f)
-            self.chain = [self._block_from_dict(b) for b in raw]
-            if not self.is_valid():
-                # Log warning but keep the tampered chain loaded so the API
-                # can still serve it and report the invalid state to the frontend
+            try:
+                with open(CHAIN_FILE, "r", encoding="utf-8") as f:
+                    raw = json.load(f)
+                # An empty list is treated as a fresh chain (file existed but was empty / reset)
+                if not raw:
+                    self.chain = [self._genesis_block()]
+                    self._save()
+                    return
+                self.chain = [self._block_from_dict(b) for b in raw]
+                if not self.is_valid():
+                    # Log warning but keep the tampered chain loaded so the API
+                    # can still serve it and report the invalid state to the frontend
+                    import logging
+                    logging.getLogger("expense_agent").warning(
+                        "Chain integrity check failed on load - possible tampering detected!"
+                    )
+            except (json.JSONDecodeError, KeyError, ValueError) as e:
                 import logging
                 logging.getLogger("expense_agent").warning(
-                    "Chain integrity check failed on load - possible tampering detected!"
+                    "chain.json could not be parsed (%s) — starting fresh chain.", e
                 )
+                self.chain = [self._genesis_block()]
+                self._save()
         else:
             self.chain = [self._genesis_block()]
             self._save()

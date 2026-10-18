@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
 SYSTEM_PROMPT = """You are an autonomous expense approval agent for a company.
 Your job is to evaluate expense requests and decide whether to APPROVE or REJECT them.
@@ -112,19 +112,31 @@ Evaluate this request against company policy and the on-chain history above.
 Respond with your decision in the required JSON format."""
 
         # Step 3 - Call Groq
-        response = self.client.chat.completions.create(
-            model=GROQ_MODEL,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=0.2,
-            max_tokens=512,
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model=GROQ_MODEL,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=0.2,
+                max_tokens=512,
+            )
+        except Exception as e:
+            raise RuntimeError(
+                f"Groq API call failed (model={GROQ_MODEL!r}): {e}\n"
+                "Check that GROQ_API_KEY is valid and GROQ_MODEL is a supported Groq model "
+                "(e.g. llama3-8b-8192, llama-3.3-70b-versatile, gemma2-9b-it)."
+            ) from e
 
         raw_response = response.choices[0].message.content
 
-        # Step 4 - Parse decision
+        # Step 4 - Parse decision (guard against null content)
+        if not raw_response:
+            raise ValueError(
+                f"Groq returned an empty/null response for model={GROQ_MODEL!r}. "
+                "The model may have refused to respond or hit a content filter."
+            )
         parsed = _parse_agent_response(raw_response)
 
         decision = parsed.get("decision", "ESCALATE")

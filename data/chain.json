@@ -1,17 +1,89 @@
 [
   {
     "index": 0,
-    "timestamp": "2026-09-23T16:55:02.213405+00:00",
+    "timestamp": "2026-10-18T20:22:31.259689+00:00",
     "data": {
       "type": "genesis",
       "message": "Expense Approval Chain - Genesis Block"
     },
     "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-    "hash": "c465e392a39c1c2328837a130410f9f3e8f56a2b949725c9106058ba3915098c"
+    "hash": "bb3400d4bc21394ae831011f2468b4e7f49134abaf675459bb434053440a31f3"
   },
   {
     "index": 1,
-    "timestamp": "2026-09-23T16:55:03.283084+00:00",
+    "timestamp": "2026-10-18T20:25:50.044745+00:00",
+    "data": {
+      "type": "expense_decision",
+      "request": {
+        "employee": "Priya Sharma",
+        "amount": 4500.0,
+        "category": "Travel",
+        "description": "Flight tickets for client meeting in Mumbai",
+        "department": "Engineering",
+        "date": "2026-10-19"
+      },
+      "decision": "APPROVED",
+      "confidence": 0.95,
+      "reasoning": "The expense amount of Rs.4,500 falls below the Rs.5,000 threshold for auto-approval under the company policy. Additionally, the category is Travel, which is generally approved when accompanied by a reasonable business justification such as a client meeting. With no prior chain history to conflict, the request aligns with policy and is consistent with expected outcomes.",
+      "flags": [],
+      "model": "openai/gpt-oss-20b",
+      "chain_context_used": 0
+    },
+    "previous_hash": "bb3400d4bc21394ae831011f2468b4e7f49134abaf675459bb434053440a31f3",
+    "hash": "671fb1958354b760f94cdf364ea6b8a01984f74edb47219d2997b7896c8d1a3e"
+  },
+  {
+    "index": 2,
+    "timestamp": "2026-10-18T20:25:59.265812+00:00",
+    "data": {
+      "type": "expense_decision",
+      "request": {
+        "employee": "Raux Carter",
+        "amount": 30000.0,
+        "category": "Entertainment",
+        "description": "Team dinner and drinks",
+        "department": "Sales",
+        "date": "2026-10-19"
+      },
+      "decision": "ESCALATE",
+      "confidence": 0.92,
+      "reasoning": "The request is for Rs.30,000 in the Entertainment category, which exceeds the company’s threshold of Rs.25,000 for automatic approval. According to the policy, any expense above Rs.25,000 must be escalated for human review. Additionally, entertainment expenses above Rs.3,000 require strong justification; the description \"Team dinner and drinks\" does not provide sufficient detail to satisfy this requirement. No duplicate claim or other policy violations are detected, but the amount alone mandates escalation.",
+      "flags": [
+        "Amount exceeds 25k threshold",
+        "Entertainment category high amount"
+      ],
+      "model": "openai/gpt-oss-20b",
+      "chain_context_used": 1
+    },
+    "previous_hash": "671fb1958354b760f94cdf364ea6b8a01984f74edb47219d2997b7896c8d1a3e",
+    "hash": "3a53ff13154e72c5dc2760c8dbdda40d5664de734639b77bd1b821c0a532370a"
+  },
+  {
+    "index": 3,
+    "timestamp": "2026-10-18T20:28:36.045288+00:00",
+    "data": {
+      "type": "expense_decision",
+      "request": {
+        "employee": "Raux Carter",
+        "amount": 4500.0,
+        "category": "Travel",
+        "description": "Flight tickets for client meeting in Mumbai",
+        "department": "Engineering",
+        "date": "2026-10-18"
+      },
+      "decision": "APPROVED",
+      "confidence": 0.98,
+      "reasoning": "The request is for Rs.4500.0, which is below the Rs.5,000 auto‑approval threshold. The category is Travel, which is generally approved with justification. The description provides a clear business purpose (flight tickets for a client meeting). No duplicate claim exists because the prior on‑chain decision for Raux Carter was for Entertainment, not Travel, and there is no other Travel claim within the last 7 days. Therefore the request complies with company policy and past decisions.",
+      "flags": [],
+      "model": "openai/gpt-oss-20b",
+      "chain_context_used": 2
+    },
+    "previous_hash": "3a53ff13154e72c5dc2760c8dbdda40d5664de734639b77bd1b821c0a532370a",
+    "hash": "c010530ecbf028d700141b3b9447275dd887598aeca5196d8cf204841fa5e92a"
+  },
+  {
+    "index": 4,
+    "timestamp": "2026-10-18T20:28:47.061196+00:00",
     "data": {
       "type": "expense_decision",
       "request": {
@@ -20,23 +92,23 @@
         "category": "Equipment",
         "description": "New laptop for development work",
         "department": "Engineering",
-        "date": "2026-09-23"
+        "date": "2026-10-18"
       },
       "decision": "ESCALATE",
-      "confidence": 0.95,
-      "reasoning": "The request is for Rs.28,000, which exceeds the Rs.25,000 threshold defined in the company expense policy for automatic approval. Expenses above Rs.25,000 must be flagged for human review regardless of category or justification. There are no duplicate claims or prior on-chain decisions to compare against, and the justification (new laptop for development work) is reasonable but does not override the policy limit.",
+      "confidence": 0.92,
+      "reasoning": "The request is for Rs.28000.0, which exceeds the company policy threshold of Rs.25,000 for automatic approval. According to the policy, any expense above Rs.25,000 must be escalated for human review. The category is Equipment, which is generally approved with justification, but the amount alone triggers escalation. No duplicate claim is detected for Alexa Carlisle in the past 7 days. The on-chain history shows similar high‑value Entertainment expenses being escalated, reinforcing the consistency of this decision.",
       "flags": [
-        "Amount exceeds auto-approval threshold"
+        "Amount exceeds 25000 threshold"
       ],
-      "model": "openai/gpt-oss-120b",
-      "chain_context_used": 0
+      "model": "openai/gpt-oss-20b",
+      "chain_context_used": 3
     },
-    "previous_hash": "c465e392a39c1c2328837a130410f9f3e8f56a2b949725c9106058ba3915098c",
-    "hash": "fb482e2f2af845abe6c314274aae9254b813dc942b4f61990bf23b52aa9b6f2b"
+    "previous_hash": "c010530ecbf028d700141b3b9447275dd887598aeca5196d8cf204841fa5e92a",
+    "hash": "3c303539498fe52c8a2d3794b6aa3874b511709fd126705d1f434958a52d860b"
   },
   {
-    "index": 2,
-    "timestamp": "2026-09-23T16:55:27.837748+00:00",
+    "index": 5,
+    "timestamp": "2026-10-18T20:28:53.511661+00:00",
     "data": {
       "type": "expense_decision",
       "request": {
@@ -45,16 +117,16 @@
         "category": "Meals",
         "description": "Team lunch after quarterly review",
         "department": "Sales",
-        "date": "2026-09-23"
+        "date": "2026-10-18"
       },
       "decision": "APPROVED",
       "confidence": 0.97,
-      "reasoning": "The request is for Rs.1,200, which is well below the Rs.5,000 auto‑approval threshold. Meals for a team lunch are a reasonable business expense and do not require additional justification. The on‑chain history shows only an ESCALATE decision for a high‑value equipment purchase (Rs.28,000) by a different employee, which does not affect this low‑value meal claim. No duplicate claim exists for Mark Hamilton within the past 7 days.",
+      "reasoning": "The expense is Rs.1200.0 for Meals, which is below the Rs.5,000 auto-approval threshold. The description indicates a team lunch after a quarterly review, a reasonable business justification for a meal expense. No duplicate claim exists for Mark Hamilton in the same category within the last 7 days, and the on-chain history shows similar low‑amount travel and meal expenses were approved. Therefore, the request aligns with company policy and past decisions.",
       "flags": [],
-      "model": "openai/gpt-oss-120b",
-      "chain_context_used": 1
+      "model": "openai/gpt-oss-20b",
+      "chain_context_used": 4
     },
-    "previous_hash": "fb482e2f2af845abe6c314274aae9254b813dc942b4f61990bf23b52aa9b6f2b",
-    "hash": "673c7d4f96ccf6b35f855bee157be403368594bbf7efcf92b692485f35fb859b"
+    "previous_hash": "3c303539498fe52c8a2d3794b6aa3874b511709fd126705d1f434958a52d860b",
+    "hash": "895c88ed713bd73ba5357c5b2d2c4ea8354de5c6a57be7c080e15a94e96a2719"
   }
 ]
